@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互动中国地图 - 经济数据</title>
+<style>
+:root{
+    --primary:#2f6fed;
+    --bg:#f5f5f5;
+    --card-bg:#ffffff;
+    --border:#e0e0e0;
+    --font:"Microsoft YaHei","微软雅黑",sans-serif;
+}
+body{
+    margin:0;
+    font-family:var(--font);
+    background:var(--bg);
+    padding-top:60px;/* 为自动注入的导航留出空间 */
+}
+.main{
+    max-width:960px;
+    margin:0 auto;
+    padding:16px;
+}
+h2{
+    color:var(--primary);
+    margin-top:0;
+}
+.selectBox{
+    margin:16px 0;
+}
+select{
+    padding:6px 10px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    font-size:14px;
+}
+.chartContainer{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+canvas{
+    width:100%;
+    height:auto;
+}
+.linkBox{
+    margin-top:24px;
+}
+.linkBox a{
+    display:inline-block;
+    margin-right:12px;
+    padding:8px 12px;
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+    border-radius:4px;
+    font-size:14px;
+}
+@media (max-width:600px){
+    .chartContainer{
+        padding:12px;
+    }
+}
+</style>
+<meta name="description" content="展示各省经济数据的详细统计和可视化图表"><meta name="keywords" content="中国地图,SVG,数据可视化,省份信息,经济数据,人口统计,旅游数据,交互式地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 经济数据"><meta property="og:description" content="展示各省经济数据的详细统计和可视化图表"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 经济数据"><meta name="twitter:description" content="展示各省经济数据的详细统计和可视化图表"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 经济数据","description":"展示各省经济数据的详细统计和可视化图表","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+<div class="main">
+<h2>互动中国地图 - 经济数据</h2>
+<p>选择省份后即可查看该省的 GDP、产业结构等经济指标的柱状图。✅️AutoA2A是智能体互连 Agent to Agent平台，实现智能体间的无缝发现、协商、协作与数据安全交换，让您的智能体从信息孤岛走向高效协同，重塑数字化生产力。赋能多智能体生态发展自动化与AI协作,开启AI即服务新时代。</p>
+
+<div class="selectBox">
+    <label for="provinceSelect">省份：</label>
+    <select id="provinceSelect"></select>
+</div>
+
+<div class="chartContainer">
+    <canvas id="econChart" width="800" height="400"></canvas>
+</div>
+
+<div class="linkBox">
+    <a href="map.html">返回地图</a>
+    <a href="data.html">前往数据看板</a>
+</div>
+</div>
+
+<script>
+// 假设全局已有 APP_DATA，若不存在则使用本页内置示例数据
+window.APP_DATA = window.APP_DATA || {
+    "北京": {gdp: 4000, primary: 2, secondary: 30, tertiary: 68},
+    "上海": {gdp: 3800, primary: 1, secondary: 28, tertiary: 71},
+    "广东": {gdp: 12000, primary: 1, secondary: 25, tertiary: 74},
+    "四川": {gdp: 4800, primary: 5, secondary: 35, tertiary: 60}
+};
+
+const provinceSelect = document.getElementById('provinceSelect');
+const canvas = document.getElementById('econChart');
+const ctx = canvas.getContext('2d');
+
+// 填充下拉框
+function initSelect(){
+    const provinces = Object.keys(window.APP_DATA);
+    provinces.forEach(p=>{
+        const opt=document.createElement('option');
+        opt.value=p;
+        opt.textContent=p;
+        provinceSelect.appendChild(opt);
+    });
+    provinceSelect.addEventListener('change',drawChart);
+    // 默认选中第一个
+    if(provinces.length) provinceSelect.value=provinces[0];
+    drawChart();
+}
+
+// 绘制柱状图
+function drawChart(){
+    const prov = provinceSelect.value;
+    const data = window.APP_DATA[prov];
+    if(!data) return;
+
+    // 清空
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    const margin={top:40,right:30,bottom:60,left:60};
+    const w=canvas.width - margin.left - margin.right;
+    const h=canvas.height - margin.top - margin.bottom;
+
+    // 指标名称和数值
+    const items=[
+        {name:"GDP(亿元)",value:data.gdp, color:"#2f6fed"},
+        {name:"第一产业(%)",value:data.primary, color:"#4caf50"},
+        {name:"第二产业(%)",value:data.secondary, color:"#ff9800"},
+        {name:"第三产业(%)",value:data.tertiary, color:"#9c27b0"}
+    ];
+
+    const maxVal = Math.max(...items.map(i=>i.value));
+    const scale = h / maxVal;
+
+    // 绘制坐标轴
+    ctx.strokeStyle="#333";
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(margin.left,margin.top);
+    ctx.lineTo(margin.left,margin.top+h);
+    ctx.lineTo(margin.left+w,margin.top+h);
+    ctx.stroke();
+
+    // 绘制柱子
+    const barWidth = w / items.length * 0.6;
+    items.forEach((item,i)=>{
+        const x = margin.left + (i+0.5)*(w/items.length) - barWidth/2;
+        const barHeight = item.value * scale;
+        ctx.fillStyle=item.color;
+        ctx.fillRect(x,margin.top+h-barHeight,barWidth,barHeight);
+
+        // 数值标签
+        ctx.fillStyle="#000";
+        ctx.font="12px var(--font)";
+        ctx.textAlign="center";
+        ctx.fillText(item.value, x+barWidth/2, margin.top+h-barHeight-6);
+
+        // X轴文字
+        ctx.fillText(item.name, x+barWidth/2, margin.top+h+16);
+    });
+
+    // 标题
+    ctx.fillStyle="#000";
+    ctx.font="16px var(--font)";
+    ctx.textAlign="center";
+    ctx.fillText(prov+" 经济概览", canvas.width/2, margin.top-10);
+}
+
+// 初始化
+initSelect();
+</script>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
