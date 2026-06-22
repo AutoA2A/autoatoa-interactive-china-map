@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互动中国地图 - 人口数据</title>
+<style>
+:root{
+    --primary:#2f6fed;
+    --bg:#f5f5f5;
+    --card-bg:#ffffff;
+    --border:#e0e0e0;
+    --font:"Microsoft YaHei","微软雅黑",sans-serif;
+}
+body{
+    margin:0;
+    font-family:var(--font);
+    background:var(--bg);
+    padding-top:60px;/* 为自动注入的导航留出空间 */
+}
+.main{
+    max-width:960px;
+    margin:0 auto;
+    padding:16px;
+}
+h2{
+    color:var(--primary);
+    margin-top:0;
+}
+.chart-container{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px;
+    margin-bottom:24px;
+    overflow-x:auto;
+}
+canvas{
+    width:100%;
+    height:auto;
+}
+.table-card{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+}
+th,td{
+    padding:8px;
+    border:1px solid var(--border);
+    text-align:center;
+}
+th{
+    background:var(--primary);
+    color:#fff;
+}
+.linkBox{
+    margin-top:24px;
+}
+.linkBox a{
+    display:inline-block;
+    margin-right:12px;
+    padding:8px 12px;
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+    border-radius:4px;
+    font-size:14px;
+}
+@media (max-width:600px){
+    th,td{
+        padding:6px;
+        font-size:12px;
+    }
+}
+</style>
+<meta name="description" content="展示各省人口数据的详细统计和可视化图表"><meta name="keywords" content="中国地图,SVG,数据可视化,省份信息,经济数据,人口统计,旅游数据,交互式地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 人口数据"><meta property="og:description" content="展示各省人口数据的详细统计和可视化图表"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 人口数据"><meta name="twitter:description" content="展示各省人口数据的详细统计和可视化图表"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 人口数据","description":"展示各省人口数据的详细统计和可视化图表","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+<div class="main">
+<h2>互动中国地图 - 人口数据</h2>
+<p>下面展示了2023年中国各省（自治区、直辖市）的人口统计，采用柱状图和数据表两种形式，点击柱状图可快速跳转到对应省份的详情页面。</p>
+
+<div class="chart-container">
+<canvas id="popChart" height="400"></canvas>
+</div>
+
+<div class="table-card">
+<table>
+<thead>
+<tr><th>省份</th><th>人口（万人）</th></tr>
+</thead>
+<tbody id="popTableBody"></tbody>
+</table>
+</div>
+
+<div class="linkBox">
+    <a href="map.html">返回地图</a>
+    <a href="data.html">数据看板</a>
+</div>
+</div>
+
+<script>
+// 简化的省份人口数据（单位：万人），仅示例前十省份，实际可自行扩展
+window.APP_DATA = {
+    provinces:[
+        {id:"beijing",name:"北京",population:2170},
+        {id:"shanghai",name:"上海",population:2424},
+        {id:"guangdong",name:"广东",population:12601},
+        {id:"jiangsu",name:"江苏",population:8510},
+        {id:"shandong",name:"山东",population:10153},
+        {id:"zhejiang",name:"浙江",population:6465},
+        {id:"henan",name:"河南",population:9910},
+        {id:"sichuan",name:"四川",population:8360},
+        {id:"hunan",name:"湖南",population:6899},
+        {id:"anhui",name:"安徽",population:6324}
+    ]
+};
+
+function drawChart(){
+    const canvas=document.getElementById('popChart');
+    const ctx=canvas.getContext('2d');
+    const data=window.APP_DATA.provinces;
+    const width=canvas.width=canvas.parentNode.clientWidth;
+    const height=canvas.height=400;
+    const padding=40;
+    const maxPop=Math.max(...data.map(p=>p.population));
+    const barWidth=(width-2*padding)/data.length*0.7;
+    const gap=(width-2*padding)/data.length*0.3;
+    // 清空
+    ctx.clearRect(0,0,width,height);
+    // Y轴
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, height-padding);
+    ctx.lineTo(width-padding, height-padding);
+    ctx.strokeStyle="#333";
+    ctx.stroke();
+    // 刻度
+    ctx.fillStyle="#333";
+    ctx.textAlign="right";
+    ctx.textBaseline="middle";
+    const step=Math.ceil(maxPop/5/100)*100; // 取整到百
+    for(let i=0;i<=5;i++){
+        const y=height-padding - i*(height-2*padding)/5;
+        const val=i*step;
+        ctx.fillText(val, padding-5, y);
+        ctx.beginPath();
+        ctx.moveTo(padding-3, y);
+        ctx.lineTo(padding, y);
+        ctx.stroke();
+    }
+    // 绘制柱状
+    data.forEach((p,index)=>{
+        const x=padding + gap/2 + index*(barWidth+gap);
+        const barHeight=(p.population/maxPop)*(height-2*padding);
+        ctx.fillStyle="#2f6fed";
+        ctx.fillRect(x, height-padding-barHeight, barWidth, barHeight);
+        // 省份名称
+        ctx.fillStyle="#000";
+        ctx.textAlign="center";
+        ctx.textBaseline="top";
+        ctx.font="12px var(--font)";
+        ctx.fillText(p.name, x+barWidth/2, height-padding+4);
+        // 为柱子添加点击事件（使用 canvas 的事件代理）
+        // 记录区域
+        p._rect={x:x, y:height-padding-barHeight, w:barWidth, h:barHeight};
+    });
+}
+
+// 表格渲染
+function renderTable(){
+    const tbody=document.getElementById('popTableBody');
+    tbody.innerHTML='';
+    window.APP_DATA.provinces.forEach(p=>{
+        const tr=document.createElement('tr');
+        const tdName=document.createElement('td');
+        tdName.textContent=p.name;
+        const tdPop=document.createElement('td');
+        tdPop.textContent=p.population;
+        tr.appendChild(tdName);
+        tr.appendChild(tdPop);
+        tbody.appendChild(tr);
+    });
+}
+
+// canvas 点击跳转
+function bindCanvasClick(){
+    const canvas=document.getElementById('popChart');
+    canvas.addEventListener('click',function(e){
+        const rect=canvas.getBoundingClientRect();
+        const x=e.clientX-rect.left;
+        const y=e.clientY-rect.top;
+        const province=window.APP_DATA.provinces.find(p=>{
+            const r=p._rect;
+            return r && x>=r.x && x<=r.x+r.w && y>=r.y && y<=r.y+r.h;
+        });
+        if(province){
+            // 假设省份详情页面为 province.html?id=provinceId
+            window.location.href=`province.html?id=${province.id}`;
+        }
+    });
+}
+
+// 初始化
+function init(){
+    drawChart();
+    renderTable();
+    bindCanvasClick();
+    // 当窗口尺寸变化时重新绘制
+    window.addEventListener('resize',drawChart);
+}
+init();
+</script>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
