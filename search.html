@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互动中国地图 - 搜索</title>
+<style>
+:root{
+    --primary:#2f6fed;
+    --bg:#f5f5f5;
+    --card-bg:#ffffff;
+    --border:#e0e0e0;
+    --font:"Microsoft YaHei","微软雅黑",sans-serif;
+}
+body{
+    margin:0;
+    font-family:var(--font);
+    background:var(--bg);
+    padding-top:60px;/* 为自动注入的导航留出空间 */
+}
+.main{
+    max-width:960px;
+    margin:0 auto;
+    padding:16px;
+}
+h2{
+    color:var(--primary);
+    margin-top:0;
+}
+.search-box{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:16px;
+}
+.search-box input{
+    flex:1;
+    min-width:120px;
+    padding:8px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    font-size:14px;
+}
+.search-box button{
+    padding:8px 12px;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+    font-size:14px;
+}
+.result-list{
+    list-style:none;
+    padding:0;
+    margin:0 0 24px 0;
+}
+.result-list li{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.result-list .name{
+    font-weight:bold;
+    color:var(--primary);
+}
+.result-list .action a{
+    margin-left:8px;
+    padding:4px 8px;
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+    border-radius:4px;
+    font-size:12px;
+}
+#mapContainer{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+    margin-top:24px;
+}
+svg{
+    width:100%;
+    height:auto;
+    display:block;
+}
+.province{
+    fill:#c0d4f7;
+    stroke:#fff;
+    stroke-width:0.5;
+    cursor:pointer;
+    transition:fill .2s;
+}
+.province:hover{
+    fill:#a0c0f7;
+}
+.province.highlight{
+    fill:#ffcc00 !important;
+}
+@media (max-width:600px){
+    .search-box{
+        flex-direction:column;
+    }
+}
+</style>
+<meta name="description" content="提供搜索功能，输入关键词或指标范围，返回匹配省份列表并高亮对应SVG"><meta name="keywords" content="中国地图,SVG,数据可视化,省份信息,经济数据,人口统计,旅游数据,交互式地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 搜索"><meta property="og:description" content="提供搜索功能，输入关键词或指标范围，返回匹配省份列表并高亮对应SVG"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 搜索"><meta name="twitter:description" content="提供搜索功能，输入关键词或指标范围，返回匹配省份列表并高亮对应SVG"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 搜索","description":"提供搜索功能，输入关键词或指标范围，返回匹配省份列表并高亮对应SVG","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+<div class="main">
+<h2>互动中国地图 - 搜索</h2>
+<p>在下方输入省份名称关键字，系统会返回匹配的省份列表并在地图上高亮对应区域。</p>
+
+<div class="search-box">
+    <input type="text" id="keyword" placeholder="输入省份名称，例如：北京、广东">
+    <button id="searchBtn">搜索</button>
+</div>
+
+<ul class="result-list" id="resultList"></ul>
+
+<div id="mapContainer">
+<svg viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
+    <!-- 简化示例路径，仅北京、上海、广东 -->
+    <path id="beijing" class="province" d="M500,200 L520,190 L540,210 L530,230 L510,225 Z"
+          data-name="北京" data-info="首都，北京是中国的政治、文化中心。"/>
+    <path id="shanghai" class="province" d="M620,350 L640,340 L660,360 L650,380 L630,375 Z"
+          data-name="上海" data-info="直辖市，上海是中国的经济金融中心。"/>
+    <path id="guangdong" class="province" d="M480,560 L500,550 L520,570 L510,590 L490,585 Z"
+          data-name="广东" data-info="经济最发达的省份之一，拥有广州、深圳等大城市。"/>
+    <!-- 其它省份可自行补充 -->
+</svg>
+</div>
+
+<div class="linkBox" style="margin-top:24px;">
+    <a href="map.html" style="display:inline-block;margin-right:12px;padding:8px 12px;background:var(--primary);color:#fff;text-decoration:none;border-radius:4px;font-size:14px;">地图</a>
+    <a href="data.html" style="display:inline-block;margin-right:12px;padding:8px 12px;background:var(--primary);color:#fff;text-decoration:none;border-radius:4px;font-size:14px;">数据看板</a>
+</div>
+</div>
+
+<script>
+(function(){
+    const provinces = Array.from(document.querySelectorAll('.province'));
+    const resultList = document.getElementById('resultList');
+    const keywordInput = document.getElementById('keyword');
+    const searchBtn = document.getElementById('searchBtn');
+
+    function clearHighlights(){
+        provinces.forEach(p=>p.classList.remove('highlight'));
+    }
+
+    function renderResults(matches){
+        resultList.innerHTML='';
+        if(matches.length===0){
+            const li=document.createElement('li');
+            li.textContent='未找到匹配的省份';
+            resultList.appendChild(li);
+            return;
+        }
+        matches.forEach(p=>{
+            const li=document.createElement('li');
+            const nameSpan=document.createElement('span');
+            nameSpan.className='name';
+            nameSpan.textContent=p.dataset.name;
+            const actions=document.createElement('span');
+            actions.className='action';
+            const viewLink=document.createElement('a');
+            viewLink.href='province.html?id='+p.id;
+            viewLink.textContent='详情';
+            const mapLink=document.createElement('a');
+            mapLink.href='map.html#'+p.id;
+            mapLink.textContent='地图';
+            actions.appendChild(viewLink);
+            actions.appendChild(mapLink);
+            li.appendChild(nameSpan);
+            li.appendChild(actions);
+            li.addEventListener('click',()=>{
+                clearHighlights();
+                p.classList.add('highlight');
+                p.scrollIntoView({behavior:'smooth',block:'center'});
+            });
+            resultList.appendChild(li);
+        });
+    }
+
+    function performSearch(){
+        const kw=keywordInput.value.trim().toLowerCase();
+        clearHighlights();
+        if(!kw){
+            renderResults([]);
+            return;
+        }
+        const matches=provinces.filter(p=>p.dataset.name.toLowerCase().includes(kw));
+        renderResults(matches);
+        if(matches.length===1){
+            matches[0].classList.add('highlight');
+        }
+    }
+
+    searchBtn.addEventListener('click',performSearch);
+    keywordInput.addEventListener('keydown',e=>{
+        if(e.key==='Enter') performSearch();
+    });
+
+    // 点击省份也能高亮并显示在结果列表
+    provinces.forEach(p=>{
+        p.addEventListener('click',()=>{
+            clearHighlights();
+            p.classList.add('highlight');
+            renderResults([p]);
+        });
+    });
+})();
+</script>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
