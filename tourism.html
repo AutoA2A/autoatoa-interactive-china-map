@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互动中国地图 - 旅游数据</title>
+<style>
+:root{
+    --primary:#2f6fed;
+    --bg:#f5f5f5;
+    --card-bg:#ffffff;
+    --border:#e0e0e0;
+    --font:"Microsoft YaHei","微软雅黑",sans-serif;
+}
+body{
+    margin:0;
+    font-family:var(--font);
+    background:var(--bg);
+    padding-top:60px;/* 为自动注入的导航留出空间 */
+}
+.main{
+    max-width:960px;
+    margin:0 auto;
+    padding:16px;
+}
+h2{
+    color:var(--primary);
+    margin-top:0;
+}
+.selectBox{
+    margin:16px 0;
+}
+select{
+    padding:6px 10px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    font-size:14px;
+}
+canvas{
+    width:100%;
+    max-width:800px;
+    height:auto;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:8px;
+}
+.linkBox{
+    margin-top:24px;
+}
+.linkBox a{
+    display:inline-block;
+    margin-right:12px;
+    padding:8px 12px;
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+    border-radius:4px;
+    font-size:14px;
+}
+@media (max-width:600px){
+    canvas{
+        height:200px;
+    }
+}
+</style>
+<meta name="description" content="展示各省旅游数据的详细统计和可视化图表"><meta name="keywords" content="中国地图,SVG,数据可视化,省份信息,经济数据,人口统计,旅游数据,交互式地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 旅游数据"><meta property="og:description" content="展示各省旅游数据的详细统计和可视化图表"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 旅游数据"><meta name="twitter:description" content="展示各省旅游数据的详细统计和可视化图表"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 旅游数据","description":"展示各省旅游数据的详细统计和可视化图表","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+<div class="main">
+<h2>互动中国地图 - 旅游数据</h2>
+<p>选择省份后即可查看该省近五年的旅游人数（单位：万人）以及与全国平均值的对比。</p>
+
+<div class="selectBox">
+    <label for="provinceSelect">省份：</label>
+    <select id="provinceSelect"></select>
+</div>
+
+<canvas id="tourismChart" width="800" height="400"></canvas>
+
+<div class="linkBox">
+    <a href="map.html">返回地图</a>
+    <a href="data.html">前往数据看板</a>
+</div>
+</div>
+
+<script>
+// 模拟全局数据，实际项目中会在 index.html 等页面统一定义
+window.APP_DATA = {
+    tourism: {
+        // 省份代码 -> {name, data:[{year, visitors}]}
+        beijing: {name:"北京", data:[{year:2019, visitors:150},{year:2020, visitors:120},{year:2021, visitors:180},{year:2022, visitors:200},{year:2023, visitors:210}]},
+        shanghai:{name:"上海", data:[{year:2019, visitors:170},{year:2020, visitors:130},{year:2021, visitors:190},{year:2022, visitors:220},{year:2023, visitors:230}]},
+        guangdong:{name:"广东", data:[{year:2019, visitors:300},{year:2020, visitors:250},{year:2021, visitors:340},{year:2022, visitors:380},{year:2023, visitors:410}]},
+        // 其它省份可自行添加
+    },
+    // 用于计算全国平均值
+    getNationalAvg: function(){
+        const all = [];
+        for(const key in this.tourism){
+            this.tourism[key].data.forEach(d=>all.push(d.visitors));
+        }
+        const sum = all.reduce((a,b)=>a+b,0);
+        return (sum/all.length).toFixed(1);
+    }
+};
+
+(function(){
+    const select = document.getElementById('provinceSelect');
+    const canvas = document.getElementById('tourismChart');
+    const ctx = canvas.getContext('2d');
+
+    // 填充省份下拉框
+    for(const code in window.APP_DATA.tourism){
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = window.APP_DATA.tourism[code].name;
+        select.appendChild(opt);
+    }
+
+    function drawChart(provinceCode){
+        const province = window.APP_DATA.tourism[provinceCode];
+        const data = province.data;
+        const years = data.map(d=>d.year);
+        const values = data.map(d=>d.visitors);
+        const avg = parseFloat(window.APP_DATA.getNationalAvg());
+
+        // 清空
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        const w = canvas.width;
+        const h = canvas.height;
+        const padding = 50;
+        const chartW = w - padding*2;
+        const chartH = h - padding*2;
+
+        // 画坐标轴
+        ctx.strokeStyle = '#666';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, h-padding);
+        ctx.lineTo(w-padding, h-padding);
+        ctx.stroke();
+
+        // Y 轴刻度
+        const maxVal = Math.max(...values, avg) * 1.2;
+        const step = Math.ceil(maxVal/5);
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for(let i=0;i<=5;i++){
+            const y = h - padding - (i*chartH/5);
+            const val = (i*step).toFixed(0);
+            ctx.fillText(val, padding-5, y);
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(w-padding, y);
+            ctx.stroke();
+        }
+
+        // X 轴刻度
+        const barW = chartW / years.length * 0.6;
+        const gap = chartW / years.length;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        years.forEach((yr,i)=>{
+            const x = padding + i*gap + gap/2;
+            ctx.fillText(yr, x, h-padding+5);
+        });
+
+        // 绘制柱状图
+        ctx.fillStyle = 'var(--primary)';
+        values.forEach((val,i)=>{
+            const x = padding + i*gap + (gap-barW)/2;
+            const barH = (val/maxVal)*chartH;
+            ctx.fillRect(x, h-padding-barH, barW, barH);
+        });
+
+        // 绘制全国平均线
+        const avgY = h - padding - (avg/maxVal)*chartH;
+        ctx.strokeStyle = '#ff5722';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(padding, avgY);
+        ctx.lineTo(w-padding, avgY);
+        ctx.stroke();
+
+        // 标注平均值
+        ctx.fillStyle = '#ff5722';
+        ctx.textAlign = 'right';
+        ctx.fillText('全国均值 '+avg, w-padding-5, avgY-5);
+    }
+
+    // 初始绘制
+    drawChart(select.value);
+
+    // 切换省份时重绘
+    select.addEventListener('change', function(){
+        drawChart(this.value);
+    });
+})();
+</script>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
