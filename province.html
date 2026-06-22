@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互动中国地图 - 省份详情</title>
+<style>
+:root{
+    --primary:#2f6fed;
+    --bg:#f5f5f5;
+    --card-bg:#ffffff;
+    --border:#e0e0e0;
+    --font:"Microsoft YaHei","微软雅黑",sans-serif;
+}
+body{
+    margin:0;
+    font-family:var(--font);
+    background:var(--bg);
+    padding-top:60px; /* 为系统注入的顶部导航预留空间 */
+}
+.main{
+    max-width:960px;
+    margin:0 auto;
+    padding:16px;
+}
+h2{
+    color:var(--primary);
+    margin-top:0;
+}
+section{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px;
+    margin-bottom:16px;
+}
+svg{
+    width:100%;
+    height:auto;
+    display:block;
+    margin:auto;
+}
+canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    background:#fff;
+}
+.news-item{
+    border-bottom:1px solid var(--border);
+    padding:8px 0;
+}
+.news-item:last-child{
+    border:none;
+}
+.news-item h4{
+    margin:0 0 4px 0;
+    font-size:15px;
+    color:var(--primary);
+}
+.news-item p{
+    margin:0;
+    font-size:13px;
+    line-height:1.4;
+}
+.linkBox{
+    margin-top:12px;
+}
+.linkBox a{
+    display:inline-block;
+    margin-right:8px;
+    padding:6px 10px;
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+    border-radius:4px;
+    font-size:13px;
+}
+@media (max-width:600px){
+    .main{padding:8px;}
+    section{padding:12px;}
+}
+</style>
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="互动中国地图 - 省份详情">
+<meta property="og:description" content="展示选中省份的详细信息，包括SVG地图、统计图表和新闻列表">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="互动中国地图 - 省份详情">
+<meta name="twitter:description" content="展示选中省份的详细信息，包括SVG地图、统计图表和新闻列表">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"互动中国地图 - 省份详情",
+  "description":"展示选中省份的详细信息，包括SVG地图、统计图表和新闻列表",
+  "applicationCategory":"UtilitiesApplication",
+  "operatingSystem":"Any",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}
+}
+</script>
+<meta name="description" content="展示选中省份的详细信息，包括SVG地图、统计图表和新闻列表"><meta name="keywords" content="中国地图,SVG,数据可视化,省份信息,经济数据,人口统计,旅游数据,交互式地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 省份详情"><meta property="og:description" content="展示选中省份的详细信息，包括SVG地图、统计图表和新闻列表"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 省份详情"><meta name="twitter:description" content="展示选中省份的详细信息，包括SVG地图、统计图表和新闻列表"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 省份详情","description":"展示选中省份的详细信息，包括SVG地图、统计图表和新闻列表","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+<div class="main">
+    <h2>省份详情</h2>
+
+    <section id="provinceInfo">
+        <h3 id="provName">加载中…</h3>
+        <p id="provDesc"></p>
+    </section>
+
+    <section id="provinceMap">
+        <h3>省份局部地图</h3>
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" id="provSvg">
+            <rect width="200" height="200" fill="#e0e0e0"/>
+        </svg>
+    </section>
+
+    <section id="provinceChart">
+        <h3>主要指标统计</h3>
+        <canvas id="chartCanvas" width="400" height="200"></canvas>
+    </section>
+
+    <section id="provinceNews">
+        <h3>最新新闻</h3>
+        <div id="newsList">加载中…</div>
+    </section>
+
+    <div class="linkBox">
+        <a id="backMap" href="map.html">返回地图</a>
+        <a id="viewData" href="data.html">查看数据看板</a>
+    </div>
+</div>
+
+<script>
+// 模拟的本地数据（实际项目应通过 Ajax 或其它方式获取）
+window.APP_DATA = {
+    provinces: {
+        beijing: {
+            name: "北京",
+            desc: "首都，北京是中国的政治、文化中心。",
+            svgPath: "M50,50 L80,40 L110,60 L100,90 L70,85 Z",
+            stats: {人口: 2154, GDP: 3610, 旅游: 120},
+            news: [
+                {title:"北京举办国际科技论坛", date:"2024-03-12", summary:"北京成功举办了年度国际科技论坛，吸引了全球顶尖专家。"},
+                {title:"北京推出新公共交通卡", date:"2024-02-28", summary:"全新公交卡实现刷卡即付，提升出行便利。"}
+            ]
+        },
+        shanghai: {
+            name: "上海",
+            desc: "直辖市，上海是中国的经济金融中心。",
+            svgPath: "M120,70 L150,60 L180,80 L170,110 L140,105 Z",
+            stats: {人口: 2424, GDP: 4300, 旅游: 200},
+            news: [
+                {title:"上海世博会新展馆开放", date:"2024-04-01", summary:"上海世博会新展馆正式对外开放，展示未来城市发展。"},
+                {title:"上海推出绿色出行计划", date:"2024-03-20", summary:"鼓励市民使用新能源车辆，降低碳排放。"}
+            ]
+        },
+        guangdong: {
+            name: "广东",
+            desc: "经济最发达的省份之一，拥有广州、深圳等大城市。",
+            svgPath: "M30,130 L70,120 L110,150 L100,180 L60,175 Z",
+            stats: {人口: 12600, GDP: 12000, 旅游: 350},
+            news: [
+                {title:"广东打造粤港澳大湾区创新走廊", date:"2024-03-15", summary:"加速区域科技合作，推动产业升级。"},
+                {title:"广东省发布最新人口统计", date:"2024-02-10", summary:"最新统计显示广东人口继续保持增长。"}
+            ]
+        }
+    }
+};
+
+function getQueryParam(key){
+    const params = new URLSearchParams(location.search);
+    return params.get(key);
+}
+
+(function(){
+    const provId = getQueryParam('id') || 'beijing';
+    const data = window.APP_DATA.provinces[provId];
+
+    if(!data){
+        document.getElementById('provName').textContent = "未知省份";
+        document.getElementById('provDesc').textContent = "";
+        return;
+    }
+
+    // 基本信息
+    document.getElementById('provName').textContent = data.name;
+    document.getElementById('provDesc').textContent = data.desc;
+
+    // SVG 局部地图
+    const svg = document.getElementById('provSvg');
+    const ns = "http://www.w3.org/2000/svg";
+    const path = document.createElementNS(ns,'path');
+    path.setAttribute('d', data.svgPath);
+    path.setAttribute('fill', getComputedStyle(document.documentElement).getPropertyValue('--primary'));
+    path.setAttribute('stroke','#fff');
+    path.setAttribute('stroke-width','1');
+    svg.appendChild(path);
+
+    // 简易柱状图
+    const canvas = document.getElementById('chartCanvas');
+    const ctx = canvas.getContext('2d');
+    const labels = Object.keys(data.stats);
+    const values = Object.values(data.stats);
+    const maxVal = Math.max(...values);
+    const w = canvas.width, h = canvas.height;
+    const pad = 40;
+    const barW = (w - 2*pad) / labels.length * 0.6;
+
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle = '#666';
+    ctx.beginPath();
+    ctx.moveTo(pad, pad);
+    ctx.lineTo(pad, h - pad);
+    ctx.lineTo(w - pad, h - pad);
+    ctx.stroke();
+
+    labels.forEach((label,i)=>{
+        const x = pad + (i + 0.5)*(w - 2*pad)/labels.length;
+        const barH = (values[i]/maxVal)*(h - 2*pad);
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+        ctx.fillRect(x - barW/2, h - pad - barH, barW, barH);
+        ctx.fillStyle = '#000';
+        ctx.font = '12px var(--font)';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, x, h - pad + 15);
+        ctx.fillText(values[i], x, h - pad - barH - 5);
+    });
+
+    // 新闻列表
+    const newsContainer = document.getElementById('newsList');
+    newsContainer.innerHTML = '';
+    data.news.forEach(item=>{
+        const div = document.createElement('div');
+        div.className = 'news-item';
+        div.innerHTML = `<h4>${item.title}</h4><p><small>${item.date}</small> ${item.summary}</p>`;
+        newsContainer.appendChild(div);
+    });
+
+    // 链接携带省份 ID
+    document.getElementById('backMap').href = `map.html?id=${provId}`;
+    document.getElementById('viewData').href = `data.html?id=${provId}`;
+})();
+</script>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
