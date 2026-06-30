@@ -1,221 +1,200 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>互动中国地图 - 地图</title>
-<style>
-:root{
-    --primary:#2f6fed;
-    --bg:#f5f5f5;
-    --card-bg:#ffffff;
-    --border:#e0e0e0;
-    --font:"Microsoft YaHei","微软雅黑",sans-serif;
-}
-body{
-    margin:0;
-    font-family:var(--font);
-    background:var(--bg);
-    padding-top:60px; /* 为自动注入的导航留出空间 */
-}
-.main{
-    max-width:960px;
-    margin:0 auto;
-    padding:16px;
-}
-h2{
-    color:var(--primary);
-    margin-top:0;
-}
-#mapContainer{
-    position:relative;
-    width:100%;
-    overflow:hidden;
-}
-svg{
-    width:100%;
-    height:auto;
-    display:block;
-}
-.province{
-    fill:#c0d4f7;
-    stroke:#fff;
-    stroke-width:0.5;
-    cursor:pointer;
-    transition:fill .2s;
-}
-.province:hover{
-    fill:#a0c0f7;
-}
-#detailCard{
-    position:absolute;
-    background:var(--card-bg);
-    border:1px solid var(--border);
-    border-radius:8px;
-    padding:12px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.2);
-    max-width:260px;
-    display:none;
-    z-index:10;
-}
-#detailCard h3{
-    margin:0 0 8px 0;
-    font-size:16px;
-    color:var(--primary);
-}
-#detailCard p{
-    margin:0 0 8px 0;
-    font-size:14px;
-    line-height:1.4;
-}
-#detailCard .btn{
-    display:inline-block;
-    margin-right:8px;
-    padding:6px 10px;
-    background:var(--primary);
-    color:#fff;
-    text-decoration:none;
-    border-radius:4px;
-    font-size:13px;
-}
-.linkBox{
-    margin-top:24px;
-}
-.linkBox a{
-    display:inline-block;
-    margin-right:12px;
-    padding:8px 12px;
-    background:var(--primary);
-    color:#fff;
-    text-decoration:none;
-    border-radius:4px;
-    font-size:14px;
-}
-@media (max-width:600px){
-    #detailCard{
-        font-size:13px;
-    }
-}
-</style>
-<meta name="robots" content="index,follow">
-<meta property="og:type" content="website">
-<meta property="og:title" content="互动中国地图 - 地图">
-<meta property="og:description" content="展示可交互的中国SVG地图，点击省份显示详情">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="互动中国地图 - 地图">
-<meta name="twitter:description" content="展示可交互的中国SVG地图，点击省份显示详情">
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"WebApplication",
-  "name":"互动中国地图 - 地图",
-  "description":"展示可交互的中国SVG地图，点击省份显示详情",
-  "applicationCategory":"UtilitiesApplication",
-  "operatingSystem":"Any",
-  "offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}
-}
-</script>
-<style data-a2a="basecss">
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0}
-img,canvas,svg,video,table{max-width:100%;height:auto}
-pre,code{white-space:pre-wrap;word-break:break-word}
-[data-a2a="header"]{width:100%}
-@media(max-width:640px){body{font-size:15px}}
-</style>
-<meta name="description" content="展示可交互的中国SVG地图，点击省份显示详情"><meta name="keywords" content="中国地图,SVG,数据可视化,省份信息,经济数据,人口统计,旅游数据,交互式地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 地图"><meta property="og:description" content="展示可交互的中国SVG地图，点击省份显示详情"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 地图"><meta name="twitter:description" content="展示可交互的中国SVG地图，点击省份显示详情"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 地图","description":"展示可交互的中国SVG地图，点击省份显示详情","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script></head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互动中国地图 - 地图</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .nav-bar {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        .nav-bar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        .nav-bar a:hover {
+            color: #2ecc71;
+        }
+        .header {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 16px auto;
+            padding: 0 16px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 8px;
+            }
+        }
+        .error-text {
+            color: #e74c3c;
+        }
+    </style>
+<meta name="description" content="展示可交互的中国SVG地图，点击省份显示详情，支持触摸屏和手势缩放"><meta name="keywords" content="中国地图,省份数据,经济数据,人口数据,旅游数据,交互地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 地图"><meta property="og:description" content="展示可交互的中国SVG地图，点击省份显示详情，支持触摸屏和手势缩放"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 地图"><meta name="twitter:description" content="展示可交互的中国SVG地图，点击省份显示详情，支持触摸屏和手势缩放"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 地图","description":"展示可交互的中国SVG地图，点击省份显示详情，支持触摸屏和手势缩放","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
 <body>
-<div class="main">
-<h2>互动中国地图 - 地图</h2>
-<p>在地图上点击任意省份，即可查看该省的简要信息，并可快速进入「省份详情」或「数据看板」页面。</p>
-
-<div id="mapContainer">
-<svg viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
-    <!-- 简化示例路径，仅北京、上海、广东 -->
-    <path id="beijing" class="province" d="M500,200 L520,190 L540,210 L530,230 L510,225 Z"
-          data-name="北京" data-info="首都，北京是中国的政治、文化中心。"/>
-    <path id="shanghai" class="province" d="M620,350 L640,340 L660,360 L650,380 L630,375 Z"
-          data-name="上海" data-info="直辖市，上海是中国的经济金融中心。"/>
-    <path id="guangdong" class="province" d="M480,560 L500,550 L520,570 L510,590 L490,585 Z"
-          data-name="广东" data-info="经济最发达的省份之一，拥有广州、深圳等大城市。"/>
-</svg>
-<div id="detailCard"></div>
-</div>
-
-<div class="linkBox">
-    <a href="index.html">返回首页</a>
-    <a href="data.html">数据看板</a>
-</div>
-</div>
-
-<script>
-// 全局数据
-window.APP_DATA = {
-    beijing:{id:1,name:"北京",info:"首都，北京是中国的政治、文化中心。"},
-    shanghai:{id:2,name:"上海",info:"直辖市，上海是中国的经济金融中心。"},
-    guangdong:{id:3,name:"广东",info:"经济最发达的省份之一，拥有广州、深圳等大城市。"}
-};
-
-(function(){
-    const card = document.getElementById('detailCard');
-    const svg = document.querySelector('#mapContainer svg');
-    const container = document.getElementById('mapContainer');
-
-    function hideCard(){
-        card.style.display='none';
-    }
-
-    svg.addEventListener('click',function(e){
+    <div class="nav-bar">
+        <a href="index.html">首页</a>
+        <a href="map.html">地图</a>
+        <a href="province.html">省份详情</a>
+        <a href="data.html">数据看板</a>
+        <a href="search.html">搜索</a>
+        <a href="compare.html">对比分析</a>
+        <a href="economy.html">经济数据</a>
+        <a href="population.html">人口数据</a>
+    </div>
+    <div class="header">
+        <h1>互动中国地图</h1>
+    </div>
+    <div class="container">
+        
+<article class="container" style="background-color:#fff;padding:16px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);">
+  <h2>互动中国地图</h2>
+  <div id="mapWrapper" style="width:100%;height:500px;touch-action:none;position:relative;">
+    <svg id="chinaMap" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+      <!-- Provinces as clickable circles (approximate positions) -->
+      <circle id="beijing" class="province" cx="500" cy="200" r="12" data-name="北京" data-info="省会：北京，人口约2154万，GDP约4.3万亿元"/>
+      <circle id="tianjin" class="province" cx="520" cy="210" r="12" data-name="天津" data-info="省会：天津，人口约1386万，GDP约2.4万亿元"/>
+      <circle id="hebei" class="province" cx="480" cy="190" r="12" data-name="河北" data-info="省会：石家庄，人口约7556万，GDP约4.5万亿元"/>
+      <circle id="shanxi" class="province" cx="460" cy="210" r="12" data-name="山西" data-info="省会：太原，人口约3490万，GDP约2.6万亿元"/>
+      <circle id="neimenggu" class="province" cx="300" cy="250" r="12" data-name="内蒙古" data-info="省会：呼和浩特，人口约2550万，GDP约2.4万亿元"/>
+      <circle id="liaoning" class="province" cx="620" cy="180" r="12" data-name="辽宁" data-info="省会：沈阳，人口约4259万，GDP约3.0万亿元"/>
+      <circle id="jilin" class="province" cx="660" cy="150" r="12" data-name="吉林" data-info="省会：长春，人口约2407万，GDP约1.9万亿元"/>
+      <circle id="heilongjiang" class="province" cx="680" cy="120" r="12" data-name="黑龙江" data-info="省会：哈尔滨，人口约3185万，GDP约2.0万亿元"/>
+      <circle id="shanghai" class="province" cx="620" cy="350" r="12" data-name="上海" data-info="省会：上海，人口约2487万，GDP约4.3万亿元"/>
+      <circle id="jiangsu" class="province" cx="580" cy="340" r="12" data-name="江苏" data-info="省会：南京，人口约8526万，GDP约11.6万亿元"/>
+      <circle id="zhejiang" class="province" cx="620" cy="380" r="12" data-name="浙江" data-info="省会：杭州，人口约6577万，GDP约7.8万亿元"/>
+      <circle id="anhui" class="province" cx="540" cy="360" r="12" data-name="安徽" data-info="省会：合肥，人口约6324万，GDP约4.5万亿元"/>
+      <circle id="fujian" class="province" cx="660" cy="420" r="12" data-name="福建" data-info="省会：福州，人口约4154万，GDP约5.3万亿元"/>
+      <circle id="jiangxi" class="province" cx="600" cy="400" r="12" data-name="江西" data-info="省会：南昌，人口约4560万，GDP约3.3万亿元"/>
+      <circle id="shandong" class="province" cx="560" cy="300" r="12" data-name="山东" data-info="省会：济南，人口约10153万，GDP约8.7万亿元"/>
+      <circle id="henan" class="province" cx="520" cy="340" r="12" data-name="河南" data-info="省会：郑州，人口约9936万，GDP约6.5万亿元"/>
+      <circle id="hubei" class="province" cx="540" cy="300" r="12" data-name="湖北" data-info="省会：武汉，人口约6160万，GDP约5.6万亿元"/>
+      <circle id="hunan" class="province" cx="580" cy="380" r="12" data-name="湖南" data-info="省会：长沙，人口约6880万，GDP约4.8万亿元"/>
+      <circle id="guangdong" class="province" cx="660" cy="460" r="12" data-name="广东" data-info="省会：广州，人口约12601万，GDP约12.6万亿元"/>
+      <circle id="guangxi" class="province" cx="580" cy="460" r="12" data-name="广西" data-info="省会：南宁，人口约5013万，GDP约2.5万亿元"/>
+      <circle id="hainan" class="province" cx="720" cy="500" r="12" data-name="海南" data-info="省会：海口，人口约1008万，GDP约0.6万亿元"/>
+      <circle id="chongqing" class="province" cx="480" cy="380" r="12" data-name="重庆" data-info="省会：重庆，人口约3205万，GDP约2.9万亿元"/>
+      <circle id="sichuan" class="province" cx="420" cy="380" r="12" data-name="四川" data-info="省会：成都，人口约8367万，GDP约5.4万亿元"/>
+      <circle id="guizhou" class="province" cx="460" cy="420" r="12" data-name="贵州" data-info="省会：贵阳，人口约3856万，GDP约2.0万亿元"/>
+      <circle id="yunnan" class="province" cx="440" cy="460" r="12" data-name="云南" data-info="省会：昆明，人口约4830万，GDP约2.7万亿元"/>
+      <circle id="xizang" class="province" cx="340" cy="460" r="12" data-name="西藏" data-info="省会：拉萨，人口约365万，GDP约0.2万亿元"/>
+      <circle id="shaanxi" class="province" cx="460" cy="260" r="12" data-name="陕西" data-info="省会：西安，人口约3953万，GDP约3.0万亿元"/>
+      <circle id="gansu" class="province" cx="380" cy="260" r="12" data-name="甘肃" data-info="省会：兰州，人口约2637万，GDP约1.2万亿元"/>
+      <circle id="qinghai" class="province" cx="380" cy="300" r="12" data-name="青海" data-info="省会：西宁，人口约603万，GDP约0.3万亿元"/>
+      <circle id="ningxia" class="province" cx="440" cy="260" r="12" data-name="宁夏" data-info="省会：银川，人口约720万，GDP约0.5万亿元"/>
+      <circle id="xinjiang" class="province" cx="260" cy="300" r="12" data-name="新疆" data-info="省会：乌鲁木齐，人口约2585万，GDP约1.9万亿元"/>
+      <circle id="xianggang" class="province" cx="720" cy="460" r="12" data-name="香港" data-info="特别行政区：香港，人口约748万，GDP约3.2万亿元"/>
+      <circle id="aomen" class="province" cx="740" cy="460" r="12" data-name="澳门" data-info="特别行政区：澳门，人口约68万，GDP约0.5万亿元"/>
+      <circle id="taiwan" class="province" cx="780" cy="300" r="12" data-name="台湾" data-info="省会：台北，人口约2357万，GDP约0.7万亿元"/>
+    </svg>
+  </div>
+  <div style="margin-top:12px;text-align:center;">
+    <button style="background-color:#3498db;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;">重置视图</button>
+  </div>
+  <script>
+    (function(){
+      const svg = document.getElementById('chinaMap');
+      const wrapper = document.getElementById('mapWrapper');
+      let scale = 1;
+      let tx = 0, ty = 0;
+      const updateViewBox = () => {
+        const vb = svg.viewBox.baseVal;
+        vb.x = -tx/scale;
+        vb.y = -ty/scale;
+        vb.width = 1000/scale;
+        vb.height = 800/scale;
+      };
+      // Wheel zoom
+      svg.addEventListener('wheel', e => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.1 : -0.1;
+        const rect = svg.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+        const zoomFactor = 1 + delta;
+        tx += cx * (1 - 1/zoomFactor) * scale;
+        ty += cy * (1 - 1/zoomFactor) * scale;
+        scale *= zoomFactor;
+        updateViewBox();
+      }, {passive:false});
+      // Touch pinch zoom & pan
+      let touchStart = {};
+      let touchDistStart = 0;
+      svg.addEventListener('touchstart', e => {
+        if(e.touches.length === 2){
+          const p1 = e.touches[0];
+          const p2 = e.touches[1];
+          const dx = p2.clientX - p1.clientX;
+          const dy = p2.clientY - p1.clientY;
+          touchDistStart = Math.sqrt(dx*dx + dy*dy);
+          touchStart = {x:(p1.clientX+p2.clientX)/2, y:(p1.clientY+p2.clientY)/2};
+        } else if(e.touches.length === 1){
+          const p = e.touches[0];
+          touchStart = {x:p.clientX, y:p.clientY};
+        }
+      }, {passive:false});
+      svg.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if(e.touches.length === 2){
+          const p1 = e.touches[0];
+          const p2 = e.touches[1];
+          const dx = p2.clientX - p1.clientX;
+          const dy = p2.clientY - p1.clientY;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const factor = dist / touchDistStart;
+          const rect = svg.getBoundingClientRect();
+          const cx = touchStart.x - rect.left;
+          const cy = touchStart.y - rect.top;
+          tx += cx * (1 - 1/factor) * scale;
+          ty += cy * (1 - 1/factor) * scale;
+          scale *= factor;
+          touchDistStart = dist;
+          updateViewBox();
+        } else if(e.touches.length === 1){
+          const p = e.touches[0];
+          const dx = p.clientX - touchStart.x;
+          const dy = p.clientY - touchStart.y;
+          tx += dx/scale;
+          ty += dy/scale;
+          touchStart = {x:p.clientX, y:p.clientY};
+          updateViewBox();
+        }
+      }, {passive:false});
+      // Click province
+      svg.addEventListener('click', e => {
         const target = e.target;
-        if(!target.classList.contains('province')) return;
-        const key = target.id;
-        const data = window.APP_DATA[key];
-        if(!data) return;
-
-        const rect = target.getBoundingClientRect();
-        const contRect = container.getBoundingClientRect();
-
-        card.innerHTML = `
-            <h3>${data.name}</h3>
-            <p>${data.info}</p>
-            <a class="btn" href="province.html?id=${data.id}">省份详情</a>
-            <a class="btn" href="data.html?province=${encodeURIComponent(data.name)}">数据看板</a>
-        `;
-
-        const cardWidth = 260;
-        let left = rect.left - contRect.left + 10;
-        let top = rect.top - contRect.top + 10;
-
-        if(left + cardWidth > contRect.width){
-            left = contRect.width - cardWidth - 10;
+        if(target.classList.contains('province')){
+          const name = target.getAttribute('data-name');
+          const id = encodeURIComponent(name);
+          window.location.href = `province.html?id=${id}`;
         }
-        if(top + card.offsetHeight > contRect.height){
-            top = contRect.height - card.offsetHeight - 10;
-        }
+      });
+      // Reset button
+      document.querySelector('button').addEventListener('click', () => {
+        scale = 1; tx = 0; ty = 0;
+        updateViewBox();
+      });
+      // Initial viewBox
+      updateViewBox();
+    })();
+  </script>
+</article>
 
-        card.style.left = left + 'px';
-        card.style.top = top + 'px';
-        card.style.display = 'block';
-        e.stopPropagation();
-    });
-
-    document.addEventListener('click',hideCard);
-})();
-</script>
-<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent">
-    <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px">
-        <img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0">
-    </a>
-    <div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">
-        ✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。
     </div>
-    <div style="font-size:13px">
-        本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成
-    </div>
-    <div style="font-size:12px;color:#aab;margin-top:6px">
-        Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有
-    </div>
-</footer>
-</body>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
 </html>
