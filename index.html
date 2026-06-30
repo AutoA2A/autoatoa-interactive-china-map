@@ -1,176 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>互动中国地图 - 首页</title>
     <style>
-        :root{
-            --primary:#2f6fed;
-            --bg:#f5f5f5;
-            --card-bg:#ffffff;
-            --border:#e0e0e0;
-            --font:"Microsoft YaHei","微软雅黑",sans-serif;
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
         }
-        body{
-            margin:0;
-            font-family:var(--font);
-            background:var(--bg);
-            padding-top:60px;/* 为系统注入的导航留出空间 */
+        .nav-bar {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
         }
-        .main{
-            max-width:960px;
-            margin:0 auto;
-            padding:16px;
+        .nav-bar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 8px;
         }
-        h2{
-            color:var(--primary);
-            margin-top:0;
+        .nav-bar a:hover {
+            color: #2ecc71;
         }
-        #mapContainer{
-            position:relative;
-            width:100%;
-            overflow:hidden;
+        .header {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
         }
-        svg{
-            width:100%;
-            height:auto;
-            display:block;
+        .container {
+            max-width: 1200px;
+            margin: 16px auto;
+            padding: 0 16px;
         }
-        .province{
-            fill:#c0d4f7;
-            stroke:#fff;
-            stroke-width:0.5;
-            cursor:pointer;
-            transition:fill .2s;
-        }
-        .province:hover{
-            fill:#a0c0f7;
-        }
-        #infoCard{
-            position:absolute;
-            background:var(--card-bg);
-            border:1px solid var(--border);
-            border-radius:8px;
-            padding:12px;
-            box-shadow:0 2px 6px rgba(0,0,0,0.2);
-            max-width:250px;
-            display:none;
-            z-index:10;
-        }
-        #infoCard h3{
-            margin:0 0 8px 0;
-            font-size:16px;
-            color:var(--primary);
-        }
-        #infoCard p{
-            margin:0;
-            font-size:14px;
-            line-height:1.4;
-        }
-        .linkBox{
-            margin-top:24px;
-        }
-        .linkBox a{
-            display:inline-block;
-            margin-right:12px;
-            padding:8px 12px;
-            background:var(--primary);
-            color:#fff;
-            text-decoration:none;
-            border-radius:4px;
-            font-size:14px;
-        }
-        @media (max-width:600px){
-            #infoCard{
-                font-size:13px;
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 8px;
             }
+        }
+        .error-text {
+            color: #e74c3c;
         }
     </style>
-    <meta name="robots" content="index,follow,max-image-preview:large">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="互动中国地图 - 首页">
-    <meta property="og:description" content="展示中国轮廓SVG，点击省份弹出简介卡片">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="互动中国地图 - 首页">
-    <meta name="twitter:description" content="展示中国轮廓SVG，点击省份弹出简介卡片">
-    <script type="application/ld+json">
-    {
-        "@context":"https://schema.org",
-        "@type":"WebApplication",
-        "name":"互动中国地图 - 首页",
-        "description":"展示中国轮廓SVG，点击省份弹出简介卡片",
-        "applicationCategory":"UtilitiesApplication",
-        "operatingSystem":"Any",
-        "offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}
-    }
-    </script>
-<meta name="description" content="展示中国轮廓SVG，点击省份弹出简介卡片"><meta name="keywords" content="中国地图,SVG,数据可视化,省份信息,经济数据,人口统计,旅游数据,交互式地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 首页"><meta property="og:description" content="展示中国轮廓SVG，点击省份弹出简介卡片"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 首页"><meta name="twitter:description" content="展示中国轮廓SVG，点击省份弹出简介卡片"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 首页","description":"展示中国轮廓SVG，点击省份弹出简介卡片","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<meta name="description" content="展示中国轮廓SVG，点击省份弹出简介卡片，引导用户进入其他功能页面"><meta name="keywords" content="中国地图,省份数据,经济数据,人口数据,旅游数据,交互地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 首页"><meta property="og:description" content="展示中国轮廓SVG，点击省份弹出简介卡片，引导用户进入其他功能页面"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 首页"><meta name="twitter:description" content="展示中国轮廓SVG，点击省份弹出简介卡片，引导用户进入其他功能页面"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 首页","description":"展示中国轮廓SVG，点击省份弹出简介卡片，引导用户进入其他功能页面","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
 <body>
-    <div class="main">
-        <h2>互动中国地图 - 首页</h2>
-        <p>点击下方中国地图的省份，即可查看该省的简要介绍。</p>
-
-        <div id="mapContainer">
-            <svg viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
-                <!-- 示例省份路径，仅北京、上海、广东 -->
-                <path id="beijing" class="province" d="M500,200 L520,190 L540,210 L530,230 L510,225 Z" data-name="北京" data-info="首都，北京是中国的政治、文化中心。"></path>
-                <path id="shanghai" class="province" d="M620,350 L640,340 L660,360 L650,380 L630,375 Z" data-name="上海" data-info="直辖市，上海是中国的经济金融中心。"></path>
-                <path id="guangdong" class="province" d="M480,560 L500,550 L520,570 L510,590 L490,585 Z" data-name="广东" data-info="经济最发达的省份之一，拥有广州、深圳等大城市。"></path>
-            </svg>
-            <div id="infoCard"></div>
-        </div>
-
-        <div class="linkBox">
-            <a href="map.html">进入完整地图</a>
-            <a href="search.html">搜索省份</a>
-        </div>
+    <div class="nav-bar">
+        <a href="index.html">首页</a>
+        <a href="map.html">地图</a>
+        <a href="province.html">省份详情</a>
+        <a href="data.html">数据看板</a>
+        <a href="search.html">搜索</a>
+        <a href="compare.html">对比分析</a>
+        <a href="economy.html">经济数据</a>
+        <a href="population.html">人口数据</a>
     </div>
+    <div class="header">
+        <h1>互动中国地图</h1>
+    </div>
+    <div class="container">
+        
+<section class="container" style="background-color: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
+    <h2>互动中国地图 - 首页</h2>
+    <p>点击地图上的省份查看简要介绍，或使用下方链接进入更多功能。</p>
+    <div id="mapContainer" style="position:relative;width:100%;max-width:600px;margin:0 auto;">
+        <svg viewBox="0 0 960 800" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <path class="province" d="M460,180 L480,160 L500,180 L495,200 L470,210 Z" data-name="北京" data-info="中华人民共和国首都，政治、文化中心，拥有故宫、天安门等标志性景观。" fill="#2ecc71" stroke="#fff" stroke-width="2" style="cursor:pointer;transition:fill 0.3s;"></path>
+            <path class="province" d="M560,300 L580,280 L600,300 L590,320 L570,330 Z" data-name="上海" data-info="中国最大城市，经济金融中心，著名外滩、陆家嘴天际线。" fill="#2ecc71" stroke="#fff" stroke-width="2" style="cursor:pointer;transition:fill 0.3s;"></path>
+            <path class="province" d="M380,540 L420,520 L460,540 L440,580 L400,590 Z" data-name="广东" data-info="中国人口最多、GDP最高的省份，拥有广州、深圳、珠海等经济特区。" fill="#2ecc71" stroke="#fff" stroke-width="2" style="cursor:pointer;transition:fill 0.3s;"></path>
+            <path class="province" d="M540,380 L580,360 L620,380 L600,420 L560,430 Z" data-name="江苏" data-info="长三角核心省份，经济发达，南京、苏州、无锡等城市密集。" fill="#2ecc71" stroke="#fff" stroke-width="2" style="cursor:pointer;transition:fill 0.3s;"></path>
+            <path class="province" d="M580,260 L620,240 L660,260 L640,300 L600,310 Z" data-name="山东" data-info="华东重要省份，历史文化名山大省，济南、青岛为核心城市。" fill="#2ecc71" stroke="#fff" stroke-width="2" style="cursor:pointer;transition:fill 0.3s;"></path>
+        </svg>
+        <div id="infoCard" style="position:absolute;background:#fff;border:1px solid #ddd;border-radius:8px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);max-width:260px;display:none;z-index:10;pointer-events:none;"></div>
+    </div>
+    <div style="margin-top:24px;text-align:center;">
+        <a href="map.html" style="display:inline-block;margin:8px;padding:8px 16px;background-color:#3498db;color:#fff;text-decoration:none;border-radius:8px;cursor:pointer;">进入完整地图</a>
+        <a href="data.html" style="display:inline-block;margin:8px;padding:8px 16px;background-color:#3498db;color:#fff;text-decoration:none;border-radius:8px;cursor:pointer;">数据看板</a>
+        <a href="search.html" style="display:inline-block;margin:8px;padding:8px 16px;background-color:#3498db;color:#fff;text-decoration:none;border-radius:8px;cursor:pointer;">搜索</a>
+    </div>
+</section>
+<script>
+(function(){
+    var paths = document.querySelectorAll('.province');
+    var card = document.getElementById('infoCard');
+    var container = document.getElementById('mapContainer');
 
-    <script>
-        (function(){
-            const provinces = {
-                beijing:{name:"北京",info:"首都，北京是中国的政治、文化中心。"},
-                shanghai:{name:"上海",info:"直辖市，上海是中国的经济金融中心。"},
-                guangdong:{name:"广东",info:"经济最发达的省份之一，拥有广州、深圳等大城市。"}
-            };
-            const card = document.getElementById('infoCard');
-            const container = document.getElementById('mapContainer');
+    paths.forEach(function(p){
+        p.addEventListener('mouseenter', function(e){
+            p.style.fill = '#3498db';
+            card.style.display = 'block';
+            card.innerHTML = '<h3 style="margin:0 0 8px;color:#333;">' + p.getAttribute('data-name') + '</h3><p style="margin:0;font-size:14px;color:#666;">' + p.getAttribute('data-info') + '</p>';
+        });
+        p.addEventListener('mousemove', function(e){
+            var rect = container.getBoundingClientRect();
+            var x = e.clientX - rect.left + 15;
+            var y = e.clientY - rect.top + 15;
+            if(x + 260 > rect.width) x = e.clientX - rect.left - 275;
+            if(y + 100 > rect.height) y = e.clientY - rect.top - 115;
+            card.style.left = x + 'px';
+            card.style.top = y + 'px';
+        });
+        p.addEventListener('mouseleave', function(){
+            p.style.fill = '#2ecc71';
+            card.style.display = 'none';
+        });
+        p.addEventListener('click', function(){
+            var name = p.getAttribute('data-name');
+            window.location.href = 'map.html?id=' + encodeURIComponent(name);
+        });
+    });
+})();
+</script>
 
-            function showCard(evt, data){
-                const rect = container.getBoundingClientRect();
-                const x = evt.clientX - rect.left + 10;
-                const y = evt.clientY - rect.top + 10;
-                card.style.left = x + 'px';
-                card.style.top = y + 'px';
-                card.innerHTML = `<h3>${data.name}</h3><p>${data.info}</p>`;
-                card.style.display = 'block';
-            }
-
-            function hideCard(){
-                card.style.display = 'none';
-            }
-
-            container.addEventListener('click', function(e){
-                const target = e.target;
-                if(target.classList.contains('province')){
-                    const data = provinces[target.id];
-                    if(data){
-                        showCard(e, data);
-                    }
-                }else{
-                    hideCard();
-                }
-                e.stopPropagation();
-            });
-
-            // 点击容器外部关闭卡片
-            document.addEventListener('click', function(e){
-                if(!container.contains(e.target)){
-                    hideCard();
-                }
-            });
-        })();
-    </script>
+    </div>
 <footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
 </html>
