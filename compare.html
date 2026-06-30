@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互动中国地图 - 对比分析</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .nav-bar {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        .nav-bar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        .nav-bar a:hover {
+            color: #2ecc71;
+        }
+        .header {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 16px auto;
+            padding: 0 16px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 8px;
+            }
+        }
+        .error-text {
+            color: #e74c3c;
+        }
+    </style>
+<meta name="description" content="允许用户选择两个省份进行多维度数据对比"><meta name="keywords" content="中国地图,省份数据,经济数据,人口数据,旅游数据,交互地图"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="互动中国地图 - 对比分析"><meta property="og:description" content="允许用户选择两个省份进行多维度数据对比"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="互动中国地图 - 对比分析"><meta name="twitter:description" content="允许用户选择两个省份进行多维度数据对比"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"互动中国地图 - 对比分析","description":"允许用户选择两个省份进行多维度数据对比","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+    <div class="nav-bar">
+        <a href="index.html">首页</a>
+        <a href="map.html">地图</a>
+        <a href="province.html">省份详情</a>
+        <a href="data.html">数据看板</a>
+        <a href="search.html">搜索</a>
+        <a href="compare.html">对比分析</a>
+        <a href="economy.html">经济数据</a>
+        <a href="population.html">人口数据</a>
+    </div>
+    <div class="header">
+        <h1>互动中国地图</h1>
+    </div>
+    <div class="container">
+        
+<section class="container"><h2 style="margin-bottom:16px;">互动中国地图 - 对比分析</h2></section>
+<article class="container" style="background-color:#fff;padding:16px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);"><h2>选择省份进行对比</h2>
+<div style="display:flex;flex-wrap:wrap;gap:16px;">
+ <div>
+   <label style="display:block;margin-bottom:4px;">省份 A</label>
+   <select id="prov1" style="padding:8px;width:200px;border-radius:4px;border:1px solid #ccc;"></select>
+ </div>
+ <div>
+   <label style="display:block;margin-bottom:4px;">省份 B</label>
+   <select id="prov2" style="padding:8px;width:200px;border-radius:4px;border:1px solid #ccc;"></select>
+ </div>
+</div>
+</article>
+<article class="container" style="background-color:#fff;padding:16px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);margin-top:16px;"><h2>对比结果</h2>
+<div id="comparisonResult" style="min-height:100px;"></div>
+</article>
+<script>
+const provinces = [
+ {name:"北京", population:2154, gdp:4030, area:16410},
+ {name:"上海", population:2487, gdp:4321, area:6340},
+ {name:"广东", population:12601, gdp:12600, area:179800},
+ {name:"江苏", population:8474, gdp:11600, area:102600},
+ {name:"山东", population:10047, gdp:9800, area:157100},
+ {name:"河南", population:9936, gdp:6200, area:167000},
+ {name:"四川", population:8375, gdp:5400, area:486000},
+ {name:"湖北", population:5844, gdp:5000, area:185900},
+ {name:"湖南", population:6899, gdp:4800, area:211800},
+ {name:"广西", population:5012, gdp:2500, area:236700},
+ {name:"海南", population:934, gdp:650, area:35400},
+ {name:"重庆", population:3205, gdp:2800, area:82400},
+ {name:"陕西", population:3953, gdp:2600, area:205800},
+ {name:"甘肃", population:2501, gdp:800, area:425800},
+ {name:"内蒙古", population:2404, gdp:2000, area:1183000},
+ {name:"西藏", population:364, gdp:200, area:1228400},
+ {name:"新疆", population:2585, gdp:1400, area:1664900},
+ {name:"黑龙江", population:3185, gdp:1600, area:454800},
+ {name:"吉林", population:2407, gdp:1000, area:187400},
+ {name:"辽宁", population:4259, gdp:2600, area:145900},
+ {name:"河北", population:7461, gdp:4000, area:187700},
+ {name:"山西", population:3490, gdp:1800, area:156700},
+ {name:"安徽", population:6277, gdp:3800, area:139600},
+ {name:"浙江", population:6577, gdp:7200, area:105500},
+ {name:"福建", population:4154, gdp:5300, area:124000},
+ {name:"江西", population:4519, gdp:3000, area:166900},
+ {name:"贵州", population:3856, gdp:1800, area:176100},
+ {name:"云南", population:4830, gdp:2600, area:394100},
+ {name:"青海", population:603, gdp:300, area:721000},
+ {name:"宁夏", population:720, gdp:400, area:66400},
+ {name:"香港", population:7500, gdp:2800, area:1104},
+ {name:"澳门", population:680, gdp:400, area:33}
+];
+function populateSelect(select){
+ select.innerHTML='<option value="">-- 选择省份 --</option>';
+ provinces.forEach(p=>{
+   const opt=document.createElement('option');
+   opt.value=p.name;
+   opt.textContent=p.name;
+   select.appendChild(opt);
+ });
+}
+function getProvinceData(name){
+ return provinces.find(p=>p.name===name);
+}
+function renderComparison(p1,p2){
+ const table=document.createElement('table');
+ table.style.width='100%';
+ table.style.borderCollapse='collapse';
+ const headers=['指标',p1.name,p2.name,'差异 (p2-p1)'];
+ const thead=document.createElement('thead');
+ const trh=document.createElement('tr');
+ headers.forEach(txt=>{
+   const th=document.createElement('th');
+   th.style.padding='8px';
+   th.style.border='1px solid #ddd';
+   th.textContent=txt;
+   trh.appendChild(th);
+ });
+ thead.appendChild(trh);
+ table.appendChild(thead);
+ const tbody=document.createElement('tbody');
+ const metrics=[
+   {label:'人口 (万人)', v1:p1.population, v2:p2.population, fmt:v=>v},
+   {label:'GDP (亿元)', v1:p1.gdp, v2:p2.gdp, fmt:v=>v},
+   {label:'面积 (平方公里)', v1:p1.area, v2:p2.area, fmt:v=>v},
+   {label:'人口密度 (人/平方公里)', v1:Math.round(p1.population*10000/p1.area), v2:Math.round(p2.population*10000/p2.area), fmt:v=>v}
+ ];
+ metrics.forEach(m=>{
+   const tr=document.createElement('tr');
+   const td1=document.createElement('td');
+   td1.style.padding='8px'; td1.style.border='1px solid #ddd'; td1.textContent=m.label;
+   const td2=document.createElement('td');
+   td2.style.padding='8px'; td2.style.border='1px solid #ddd'; td2.textContent=m.fmt(m.v1);
+   const td3=document.createElement('td');
+   td3.style.padding='8px'; td3.style.border='1px solid #ddd'; td3.textContent=m.fmt(m.v2);
+   const td4=document.createElement('td');
+   td4.style.padding='8px'; td4.style.border='1px solid #ddd'; td4.textContent=m.fmt(m.v2)-m.fmt(m.v1);
+   tr.append(td1,td2,td3,td4);
+   tbody.appendChild(tr);
+ });
+ table.appendChild(tbody);
+ const resultDiv=document.getElementById('comparisonResult');
+ resultDiv.innerHTML='';
+ resultDiv.appendChild(table);
+}
+function onSelectChange(){
+ const p1=document.getElementById('prov1').value;
+ const p2=document.getElementById('prov2').value;
+ if(p1 && p2 && p1!==p2){
+   const data1=getProvinceData(p1);
+   const data2=getProvinceData(p2);
+   renderComparison(data1,data2);
+ }else{
+   document.getElementById('comparisonResult').innerHTML='';
+ }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ const s1=document.getElementById('prov1');
+ const s2=document.getElementById('prov2');
+ populateSelect(s1);
+ populateSelect(s2);
+ s1.addEventListener('change',onSelectChange);
+ s2.addEventListener('change',onSelectChange);
+});
+</script>
+
+    </div>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
